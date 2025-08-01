@@ -18,7 +18,6 @@ import dagger.hilt.android.HiltAndroidApp
 import dev.arunkumar.jarvis.ui.screens.HomeScreen
 import dev.arunkumar.jarvis.ui.theme.JarvisTheme
 import javax.inject.Inject
-import kotlin.text.Typography.dagger
 
 @HiltAndroidApp
 class JarvisApplication : Application()
