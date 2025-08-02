@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
 }
@@ -63,6 +64,8 @@ dependencies {
     implementation(libs.circuit.runtime.ui)
     implementation(libs.circuit.overlay)
     implementation(libs.circuit.backstack)
+    implementation(libs.circuit.codegen.annotations)
+    ksp(libs.circuit.codegen)
 
     // Test dependencies
     testImplementation(libs.junit)

@@ -1,47 +1,33 @@
 package dev.arunkumar.jarvis.di
 
 import com.slack.circuit.foundation.Circuit
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.ui.Ui
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import dev.arunkumar.jarvis.ui.screens.DetailsScreen
-import dev.arunkumar.jarvis.ui.screens.HomeScreen
-import dev.arunkumar.jarvis.ui.screens.SettingsScreen
-import dev.arunkumar.jarvis.ui.screens.details.DetailsPresenter
-import dev.arunkumar.jarvis.ui.screens.details.DetailsUi
-import dev.arunkumar.jarvis.ui.screens.home.HomePresenter
-import dev.arunkumar.jarvis.ui.screens.home.HomeUi
-import dev.arunkumar.jarvis.ui.screens.settings.SettingsPresenter
-import dev.arunkumar.jarvis.ui.screens.settings.SettingsUi
-import javax.inject.Singleton
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.scopes.ActivityScoped
+import dagger.multibindings.Multibinds
 
 @Module
-@InstallIn(SingletonComponent::class)
-object CircuitModule {
+@InstallIn(ActivityComponent::class)
+interface CircuitModule {
+    @Multibinds
+    fun presenterFactories(): Set<Presenter.Factory>
 
-    @Provides
-    @Singleton
-    fun provideCircuit(): Circuit {
-        return Circuit.Builder()
-            .addPresenter<HomeScreen> { _, navigator, _ ->
-                HomePresenter(navigator)
-            }
-            .addPresenter<DetailsScreen> { screen, navigator, _ ->
-                DetailsPresenter(screen, navigator)
-            }
-            .addPresenter<SettingsScreen> { _, navigator, _ ->
-                SettingsPresenter(navigator)
-            }
-            .addUi<HomeScreen> { state, modifier ->
-                HomeUi(state, modifier)
-            }
-            .addUi<DetailsScreen> { state, modifier ->
-                DetailsUi(state, modifier)
-            }
-            .addUi<SettingsScreen> { state, modifier ->
-                SettingsUi(state, modifier)
-            }
+    @Multibinds
+    fun viewFactories(): Set<Ui.Factory>
+
+    companion object {
+        @Provides
+        @ActivityScoped
+        fun provideCircuit(
+            presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
+            uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
+        ): Circuit = Circuit.Builder()
+            .addPresenterFactories(presenterFactories)
+            .addUiFactories(uiFactories)
             .build()
     }
 }

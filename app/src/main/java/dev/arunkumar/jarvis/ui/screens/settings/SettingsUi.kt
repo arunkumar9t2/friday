@@ -39,15 +39,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.codegen.annotations.CircuitInject
+import dagger.hilt.android.components.ActivityComponent
+import dev.arunkumar.jarvis.ui.screens.SettingsScreen
 @OptIn(ExperimentalMaterial3Api::class)
+@CircuitInject(SettingsScreen::class, ActivityComponent::class)
 @Composable
-fun SettingsUi(state: SettingsUiState, modifier: Modifier = Modifier) {
+fun SettingsUi(state: SettingsScreen.State, modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
                 TopAppBar(
                     title = { Text("Settings") },
                     navigationIcon = {
-                        IconButton(onClick = { state.eventSink(SettingsUiEvent.OnBackClicked) }) {
+                        IconButton(onClick = { state.eventSink(SettingsScreen.Event.OnBackClicked) }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
@@ -72,7 +76,7 @@ fun SettingsUi(state: SettingsUiState, modifier: Modifier = Modifier) {
                         trailing = {
                             Switch(
                                 checked = state.isDarkTheme,
-                                onCheckedChange = { state.eventSink(SettingsUiEvent.OnThemeToggled) }
+                                onCheckedChange = { state.eventSink(SettingsScreen.Event.OnThemeToggled) }
                             )
                         }
                     )
@@ -87,7 +91,7 @@ fun SettingsUi(state: SettingsUiState, modifier: Modifier = Modifier) {
                         trailing = {
                             Switch(
                                 checked = state.isNotificationsEnabled,
-                                onCheckedChange = { state.eventSink(SettingsUiEvent.OnNotificationsToggled) }
+                                onCheckedChange = { state.eventSink(SettingsScreen.Event.OnNotificationsToggled) }
                             )
                         }
                     )
@@ -124,7 +128,7 @@ fun SettingsUi(state: SettingsUiState, modifier: Modifier = Modifier) {
                                         DropdownMenuItem(
                                             text = { Text(language) },
                                             onClick = {
-                                                state.eventSink(SettingsUiEvent.OnLanguageChanged(language))
+                                                state.eventSink(SettingsScreen.Event.OnLanguageChanged(language))
                                                 expanded = false
                                             }
                                         )
@@ -161,8 +165,8 @@ fun SettingsUi(state: SettingsUiState, modifier: Modifier = Modifier) {
         }
     }
 
-    @Composable
-    private fun SettingsSection(
+@Composable
+private fun SettingsSection(
         title: String,
         content: @Composable () -> Unit
     ) {
@@ -185,8 +189,8 @@ fun SettingsUi(state: SettingsUiState, modifier: Modifier = Modifier) {
         }
     }
 
-    @Composable
-    private fun SettingsItem(
+@Composable
+private fun SettingsItem(
         icon: @Composable () -> Unit,
         title: String,
         subtitle: String,
@@ -216,4 +220,3 @@ fun SettingsUi(state: SettingsUiState, modifier: Modifier = Modifier) {
             trailing()
         }
     }
-}

@@ -1,6 +1,5 @@
 package dev.arunkumar.jarvis
 
-import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,13 +13,9 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
 import dev.arunkumar.jarvis.ui.screens.HomeScreen
 import dev.arunkumar.jarvis.ui.theme.JarvisTheme
 import javax.inject.Inject
-
-@HiltAndroidApp
-class JarvisApplication : Application()
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

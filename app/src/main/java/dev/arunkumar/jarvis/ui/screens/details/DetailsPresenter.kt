@@ -1,44 +1,62 @@
 package dev.arunkumar.jarvis.ui.screens.details
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.slack.circuit.runtime.CircuitUiEvent
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.codegen.annotations.CircuitInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.components.ActivityComponent
 import dev.arunkumar.jarvis.ui.screens.DetailsScreen
 
-@Composable
-fun DetailsPresenter(
-    screen: DetailsScreen,
-    navigator: Navigator
-): DetailsUiState {
-    var isFavorite by remember { mutableStateOf(false) }
-    var likeCount by remember { mutableStateOf(42) }
+class DetailsPresenter @AssistedInject constructor(
+    @Assisted private val screen: DetailsScreen,
+    @Assisted private val navigator: Navigator,
+    @Assisted private val context: CircuitContext
+) : Presenter<DetailsScreen.State> {
 
-    return DetailsUiState(
-        itemId = screen.itemId,
-        title = screen.title,
-        isFavorite = isFavorite,
-        likeCount = likeCount,
-        description = generateDescription(screen.itemId),
-        eventSink = { event ->
-            when (event) {
-                DetailsUiEvent.OnBackClicked -> {
-                    navigator.pop()
-                }
-                DetailsUiEvent.OnFavoriteToggled -> {
-                    isFavorite = !isFavorite
-                }
-                DetailsUiEvent.OnLikeClicked -> {
-                    likeCount++
+    @Composable
+    override fun present(): DetailsScreen.State {
+        var isFavorite by remember { mutableStateOf(false) }
+        var likeCount by remember { mutableStateOf(42) }
+
+        return DetailsScreen.State(
+            itemId = screen.itemId,
+            title = screen.title,
+            isFavorite = isFavorite,
+            likeCount = likeCount,
+            description = generateDescription(screen.itemId),
+            eventSink = { event ->
+                when (event) {
+                    DetailsScreen.Event.OnBackClicked -> {
+                        navigator.pop()
+                    }
+                    DetailsScreen.Event.OnFavoriteToggled -> {
+                        isFavorite = !isFavorite
+                    }
+                    DetailsScreen.Event.OnLikeClicked -> {
+                        likeCount++
+                    }
                 }
             }
-        }
-    )
+        )
+    }
+
+    @CircuitInject(DetailsScreen::class, ActivityComponent::class)
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            screen: DetailsScreen,
+            navigator: Navigator,
+            context: CircuitContext
+        ): DetailsPresenter
+    }
 }
 
 private fun generateDescription(itemId: String): String {
@@ -57,18 +75,3 @@ private fun generateDescription(itemId: String): String {
     """.trimIndent()
 }
 
-@Immutable
-data class DetailsUiState(
-    val itemId: String,
-    val title: String,
-    val isFavorite: Boolean,
-    val likeCount: Int,
-    val description: String,
-    val eventSink: (DetailsUiEvent) -> Unit
-) : CircuitUiState
-
-sealed interface DetailsUiEvent : CircuitUiEvent {
-    object OnBackClicked : DetailsUiEvent
-    object OnFavoriteToggled : DetailsUiEvent
-    object OnLikeClicked : DetailsUiEvent
-}
