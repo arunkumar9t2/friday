@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(./gradlew:*)",
+      "WebFetch(domain:developer.android.com)",
+      "Bash(git add:*)",
+      "Bash(adb shell am start:*)"
+    ],
+    "deny": []
+  }
+}

@@ -12,6 +12,7 @@ hilt = "2.57"
 hiltExt = "1.2.0"
 circuit = "0.30.0"
 ksp = "2.2.0-2.0.2"
+googleFonts = "1.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +43,9 @@ circuit-overlay = { group = "com.slack.circuit", name = "circuit-overlay", versi
 circuit-backstack = { group = "com.slack.circuit", name = "circuit-backstack", version.ref = "circuit" }
 circuit-codegen-annotations = { group = "com.slack.circuit", name = "circuit-codegen-annotations", version.ref = "circuit" }
 circuit-codegen = { group = "com.slack.circuit", name = "circuit-codegen", version.ref = "circuit" }
+
+# Google Fonts dependency
+androidx-compose-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "googleFonts" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

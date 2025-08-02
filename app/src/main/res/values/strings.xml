@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">Jarvis</string>
+  <string name="app_name">Jarvis</string>
+  <string name="accessibility_service_description">Jarvis Assistant requires accessibility access to provide system-wide assistance, overlay controls, and intelligent automation features.</string>
+
+  <!-- Permission Rationale Strings -->
+  <string name="permission_rationale_record_audio">Jarvis needs microphone access to understand your voice commands and have conversations with you.</string>
+  <string name="permission_rationale_camera">Camera access allows Jarvis to help with visual tasks like scanning documents and recognizing objects.</string>
+  <string name="permission_rationale_post_notifications">Notification permission lets Jarvis send you important alerts and reminders.</string>
+  <string name="permission_rationale_sms">SMS access allows Jarvis to help manage your text messages and send messages on your behalf.</string>
+  <string name="permission_rationale_contacts">Contact access helps Jarvis understand who you\'re talking about and manage your address book.</string>
+  <string name="permission_rationale_read_phone_state">Phone state access helps Jarvis understand when you\'re in a call and provide appropriate assistance.</string>
+  <string name="permission_rationale_system_alert_window">Overlay permission allows Jarvis to show helpful information and controls on top of other apps.</string>
+  <string name="permission_rationale_write_settings">Settings access lets Jarvis adjust system settings for automation and convenience.</string>
+  <string name="permission_rationale_notification_listener">Notification access allows Jarvis to read and manage all your notifications intelligently.</string>
+  <string name="permission_rationale_accessibility_service">Accessibility service enables Jarvis to provide system-wide assistance and automation.</string>
+  <string name="permission_rationale_query_all_packages">Package visibility helps Jarvis understand what apps you have installed for better integration.</string>
 </resources>
