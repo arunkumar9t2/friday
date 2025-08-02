@@ -40,6 +40,8 @@ circuit-runtime = { group = "com.slack.circuit", name = "circuit-runtime", versi
 circuit-runtime-ui = { group = "com.slack.circuit", name = "circuit-runtime-ui", version.ref = "circuit" }
 circuit-overlay = { group = "com.slack.circuit", name = "circuit-overlay", version.ref = "circuit" }
 circuit-backstack = { group = "com.slack.circuit", name = "circuit-backstack", version.ref = "circuit" }
+circuit-codegen-annotations = { group = "com.slack.circuit", name = "circuit-codegen-annotations", version.ref = "circuit" }
+circuit-codegen = { group = "com.slack.circuit", name = "circuit-codegen", version.ref = "circuit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,31 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.ui.Ui
-import com.slack.circuit.runtime.ui.ui
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-
-class HomeUi @AssistedInject constructor() : Ui<HomeUiState> {
-
-    @AssistedFactory
-    interface Factory {
-        fun create(): HomeUi
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    override fun Content(state: HomeUiState, modifier: Modifier) {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text(state.title) }
-                )
-            },
-            modifier = modifier
-        ) { paddingValues ->
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(state.title) }
+            )
+        },
+        modifier = modifier
+    ) { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -148,8 +133,4 @@ class HomeUi @AssistedInject constructor() : Ui<HomeUiState> {
             }
         }
     }
-}
-
-val homeUiFactory = ui<HomeUiState> { state, modifier ->
-    HomeUi().Content(state, modifier)
 }

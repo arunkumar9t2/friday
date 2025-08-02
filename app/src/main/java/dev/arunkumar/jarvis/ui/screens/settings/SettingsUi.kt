@@ -39,22 +39,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.runtime.ui.Ui
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-
-class SettingsUi @AssistedInject constructor() : Ui<SettingsUiState> {
-
-    @AssistedFactory
-    interface Factory {
-        fun create(): SettingsUi
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    override fun Content(state: SettingsUiState, modifier: Modifier) {
-        Scaffold(
-            topBar = {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsUi(state: SettingsUiState, modifier: Modifier = Modifier) {
+    Scaffold(
+        topBar = {
                 TopAppBar(
                     title = { Text("Settings") },
                     navigationIcon = {

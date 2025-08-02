@@ -1,10 +1,6 @@
 package dev.arunkumar.jarvis.di
 
 import com.slack.circuit.foundation.Circuit
-import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.Ui
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,32 +22,25 @@ object CircuitModule {
 
     @Provides
     @Singleton
-    fun provideCircuit(
-        homePresenterFactory: HomePresenter.Factory,
-        detailsPresenterFactory: DetailsPresenter.Factory,
-        settingsPresenterFactory: SettingsPresenter.Factory,
-        homeUiFactory: HomeUi.Factory,
-        detailsUiFactory: DetailsUi.Factory,
-        settingsUiFactory: SettingsUi.Factory
-    ): Circuit {
+    fun provideCircuit(): Circuit {
         return Circuit.Builder()
-            .addPresenter<HomeScreen> { screen, navigator, context ->
-                homePresenterFactory.create(navigator)
+            .addPresenter<HomeScreen> { _, navigator, _ ->
+                HomePresenter(navigator)
             }
-            .addPresenter<DetailsScreen> { screen, navigator, context ->
-                detailsPresenterFactory.create(screen, navigator)
+            .addPresenter<DetailsScreen> { screen, navigator, _ ->
+                DetailsPresenter(screen, navigator)
             }
-            .addPresenter<SettingsScreen> { screen, navigator, context ->
-                settingsPresenterFactory.create(navigator)
+            .addPresenter<SettingsScreen> { _, navigator, _ ->
+                SettingsPresenter(navigator)
             }
-            .addUi<HomeScreen> { screen, context ->
-                homeUiFactory.create()
+            .addUi<HomeScreen> { state, modifier ->
+                HomeUi(state, modifier)
             }
-            .addUi<DetailsScreen> { screen, context ->
-                detailsUiFactory.create()
+            .addUi<DetailsScreen> { state, modifier ->
+                DetailsUi(state, modifier)
             }
-            .addUi<SettingsScreen> { screen, context ->
-                settingsUiFactory.create()
+            .addUi<SettingsScreen> { state, modifier ->
+                SettingsUi(state, modifier)
             }
             .build()
     }
