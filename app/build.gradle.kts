@@ -72,6 +72,10 @@ dependencies {
   implementation(libs.circuit.codegen.annotations)
   ksp(libs.circuit.codegen)
 
+  // Termux integration dependencies
+  implementation(libs.termux.shared)
+  implementation(libs.guava.listenablefuture)
+
   // Test dependencies
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

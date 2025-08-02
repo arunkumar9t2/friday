@@ -16,6 +16,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // JitPack for Termux libraries
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

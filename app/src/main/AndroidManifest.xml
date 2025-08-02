@@ -59,6 +59,10 @@
     android:minSdkVersion="30"
     tools:ignore="QueryAllPackagesPermission" />
 
+  <!-- ==================== THIRD-PARTY PERMISSIONS ==================== -->
+  <!-- Termux command execution -->
+  <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+
   <application
     android:name=".Jarvis"
     android:allowBackup="true"
@@ -110,6 +114,12 @@
       android:name=".service.AssistantService"
       android:exported="false"
       android:foregroundServiceType="microphone|camera" />
+
+    <!-- ==================== AI BACKEND SERVICES ==================== -->
+    <!-- Termux result receiver service -->
+    <service
+      android:name=".data.termux.TermuxResultReceiver"
+      android:exported="false" />
   </application>
 
 </manifest>
