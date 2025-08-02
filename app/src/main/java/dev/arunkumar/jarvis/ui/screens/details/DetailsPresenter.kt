@@ -18,7 +18,6 @@ import dev.arunkumar.jarvis.ui.screens.DetailsScreen
 class DetailsPresenter @AssistedInject constructor(
     @Assisted private val screen: DetailsScreen,
     @Assisted private val navigator: Navigator,
-    @Assisted private val context: CircuitContext
 ) : Presenter<DetailsScreen.State> {
 
     @Composable
@@ -54,7 +53,6 @@ class DetailsPresenter @AssistedInject constructor(
         fun create(
             screen: DetailsScreen,
             navigator: Navigator,
-            context: CircuitContext
         ): DetailsPresenter
     }
 }

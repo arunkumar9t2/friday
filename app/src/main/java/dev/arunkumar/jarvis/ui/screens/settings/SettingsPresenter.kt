@@ -18,7 +18,6 @@ import dev.arunkumar.jarvis.ui.screens.SettingsScreen
 class SettingsPresenter @AssistedInject constructor(
     @Assisted private val screen: SettingsScreen,
     @Assisted private val navigator: Navigator,
-    @Assisted private val context: CircuitContext
 ) : Presenter<SettingsScreen.State> {
 
     @Composable
@@ -56,7 +55,6 @@ class SettingsPresenter @AssistedInject constructor(
         fun create(
             screen: SettingsScreen,
             navigator: Navigator,
-            context: CircuitContext
         ): SettingsPresenter
     }
 }

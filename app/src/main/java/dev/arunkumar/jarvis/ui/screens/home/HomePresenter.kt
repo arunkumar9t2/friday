@@ -20,7 +20,6 @@ import dev.arunkumar.jarvis.ui.screens.SettingsScreen
 class HomePresenter @AssistedInject constructor(
     @Assisted private val screen: HomeScreen,
     @Assisted private val navigator: Navigator,
-    @Assisted private val context: CircuitContext
 ) : Presenter<HomeScreen.State> {
 
     @Composable
@@ -42,7 +41,7 @@ class HomePresenter @AssistedInject constructor(
                         ))
                     }
                     HomeScreen.Event.OnNavigateToSettings -> {
-                        navigator.goTo(SettingsScreen)
+                        navigator.goTo(SettingsScreen())
                     }
                 }
             }
@@ -55,7 +54,6 @@ class HomePresenter @AssistedInject constructor(
         fun create(
             screen: HomeScreen,
             navigator: Navigator,
-            context: CircuitContext
         ): HomePresenter
     }
 }

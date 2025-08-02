@@ -43,7 +43,7 @@ fun JarvisApp(
     modifier: Modifier = Modifier
 ) {
     CircuitCompositionLocals(circuit) {
-        val backStack = rememberSaveableBackStack(root = HomeScreen)
+        val backStack = rememberSaveableBackStack(root = HomeScreen())
         val navigator = rememberCircuitNavigator(backStack)
 
         NavigableCircuitContent(

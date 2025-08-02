@@ -16,7 +16,7 @@ sealed interface AppScreen : Screen, Parcelable
 
 @Parcelize
 @Immutable
-data object HomeScreen : AppScreen {
+data class HomeScreen(val id : String = "") : AppScreen {
     override fun toString() = "HomeScreen"
     
     @Stable
@@ -62,7 +62,7 @@ data class DetailsScreen(
 
 @Parcelize
 @Immutable
-data object SettingsScreen : AppScreen {
+data class SettingsScreen(val id: String = "") : AppScreen {
     override fun toString() = "SettingsScreen"
     
     @Stable

@@ -42,6 +42,10 @@ android {
     }
 }
 
+ksp {
+    arg("circuit.codegen.mode", "hilt") // or "kotlin_inject_anvil"
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
