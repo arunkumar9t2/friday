@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.arunkumar.jarvis.R
@@ -18,7 +17,8 @@ import javax.inject.Singleton
 @Singleton
 class PermissionRequestHandler @Inject constructor(
   @ApplicationContext private val context: Context,
-  private val permissionManager: PermissionManager
+  private val permissionManager: PermissionManager,
+  private val permissionLauncherManager: PermissionLauncherManager
 ) {
 
   /** Request multiple runtime permissions */
@@ -27,53 +27,7 @@ class PermissionRequestHandler @Inject constructor(
     permissions: List<PermissionType>,
     onResult: (Map<PermissionType, Boolean>) -> Unit
   ) {
-    val permissionStrings = permissions
-      .filter { it.protectionLevel == ProtectionLevel.DANGEROUS }
-      .map { it.permission }
-      .toTypedArray()
-
-    if (permissionStrings.isEmpty()) {
-      onResult(emptyMap())
-      return
-    }
-
-    // Create a launcher for multiple permissions
-    val launcher = activity.registerForActivityResult(
-      ActivityResultContracts.RequestMultiplePermissions()
-    ) { results ->
-      val permissionResults = mutableMapOf<PermissionType, Boolean>()
-
-      permissions.forEach { permission ->
-        val isGranted = results[permission.permission] ?: false
-        permissionResults[permission] = isGranted
-
-        // Update permission state
-        val status = if (isGranted) {
-          PermissionStatus.GRANTED
-        } else {
-          val canShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-            activity, permission.permission
-          )
-          if (canShowRationale) {
-            PermissionStatus.DENIED
-          } else {
-            PermissionStatus.PERMANENTLY_DENIED
-          }
-        }
-
-        permissionManager.updatePermissionState(
-          permission = permission,
-          status = status,
-          canShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-            activity, permission.permission
-          )
-        )
-      }
-
-      onResult(permissionResults)
-    }
-
-    launcher.launch(permissionStrings)
+    permissionLauncherManager.requestRuntimePermissions(activity, permissions, onResult)
   }
 
   /** Request a single runtime permission */
@@ -82,9 +36,7 @@ class PermissionRequestHandler @Inject constructor(
     permission: PermissionType,
     onResult: (Boolean) -> Unit
   ) {
-    requestRuntimePermissions(activity, listOf(permission)) { results ->
-      onResult(results[permission] ?: false)
-    }
+    permissionLauncherManager.requestRuntimePermission(activity, permission, onResult)
   }
 
   /** Navigate to settings for special permissions */

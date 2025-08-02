@@ -68,17 +68,13 @@ data class SettingsScreen(val id: String = "") : AppScreen {
   @Stable
   @Immutable
   data class State(
-    val isDarkTheme: Boolean,
     val isNotificationsEnabled: Boolean,
-    val selectedLanguage: String,
     val eventSink: (Event) -> Unit
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     data object OnBackClicked : Event
-    data object OnThemeToggled : Event
     data object OnNotificationsToggled : Event
-    data class OnLanguageChanged(val language: String) : Event
     data object OnPermissionsClicked : Event
   }
 }

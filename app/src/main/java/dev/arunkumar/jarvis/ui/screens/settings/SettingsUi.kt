@@ -13,29 +13,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -69,20 +59,6 @@ fun SettingsUi(state: SettingsScreen.State, modifier: Modifier = Modifier) {
           .verticalScroll(rememberScrollState()),
       verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-      // Appearance Section
-      SettingsSection(title = "Appearance") {
-        SettingsItem(
-          icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-          title = "Dark Theme",
-          subtitle = "Switch between light and dark theme",
-          trailing = {
-            Switch(
-              checked = state.isDarkTheme,
-              onCheckedChange = { state.eventSink(SettingsScreen.Event.OnThemeToggled) }
-            )
-          }
-        )
-      }
 
       // Notifications Section
       SettingsSection(title = "Notifications") {
@@ -113,50 +89,6 @@ fun SettingsUi(state: SettingsScreen.State, modifier: Modifier = Modifier) {
         )
       }
 
-      // Language Section
-      SettingsSection(title = "Language & Region") {
-        var expanded by remember { mutableStateOf(false) }
-        val languages = listOf("English", "Spanish", "French", "German", "Japanese")
-
-        SettingsItem(
-          icon = { Icon(Icons.Filled.Info, contentDescription = null) },
-          title = "Language",
-          subtitle = "Select your preferred language",
-          trailing = {
-            ExposedDropdownMenuBox(
-              expanded = expanded,
-              onExpandedChange = { expanded = !expanded }
-            ) {
-              OutlinedTextField(
-                value = state.selectedLanguage,
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .width(140.dp)
-              )
-              ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-              ) {
-                languages.forEach { language ->
-                  DropdownMenuItem(
-                    text = { Text(language) },
-                    onClick = {
-                      state.eventSink(
-                        SettingsScreen.Event.OnLanguageChanged(
-                          language
-                        )
-                      )
-                      expanded = false
-                    }
-                  )
-                }
-              }
-            }
-          }
-        )
-      }
 
       // About Section
       SettingsSection(title = "About") {

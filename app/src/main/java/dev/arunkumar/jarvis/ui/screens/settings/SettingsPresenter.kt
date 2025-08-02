@@ -22,30 +22,18 @@ class SettingsPresenter @AssistedInject constructor(
 
   @Composable
   override fun present(): SettingsScreen.State {
-    var isDarkTheme by remember { mutableStateOf(false) }
     var isNotificationsEnabled by remember { mutableStateOf(true) }
-    var selectedLanguage by remember { mutableStateOf("English") }
 
     return SettingsScreen.State(
-      isDarkTheme = isDarkTheme,
       isNotificationsEnabled = isNotificationsEnabled,
-      selectedLanguage = selectedLanguage,
       eventSink = { event ->
         when (event) {
           SettingsScreen.Event.OnBackClicked -> {
             navigator.pop()
           }
 
-          SettingsScreen.Event.OnThemeToggled -> {
-            isDarkTheme = !isDarkTheme
-          }
-
           SettingsScreen.Event.OnNotificationsToggled -> {
             isNotificationsEnabled = !isNotificationsEnabled
-          }
-
-          is SettingsScreen.Event.OnLanguageChanged -> {
-            selectedLanguage = event.language
           }
 
           SettingsScreen.Event.OnPermissionsClicked -> {

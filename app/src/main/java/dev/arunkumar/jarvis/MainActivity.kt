@@ -13,6 +13,8 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import dagger.hilt.android.AndroidEntryPoint
+import dev.arunkumar.jarvis.data.permissions.PermissionLauncherManager
+import dev.arunkumar.jarvis.data.permissions.PermissionManager
 import dev.arunkumar.jarvis.ui.screens.HomeScreen
 import dev.arunkumar.jarvis.ui.theme.AppTheme
 import javax.inject.Inject
@@ -23,8 +25,18 @@ class MainActivity : ComponentActivity() {
   @Inject
   lateinit var circuit: Circuit
 
+  @Inject
+  lateinit var permissionLauncherManager: PermissionLauncherManager
+
+  @Inject
+  lateinit var permissionManager: PermissionManager
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    
+    // Initialize permission launcher before activity reaches STARTED state
+    permissionLauncherManager.initialize(this)
+    
     enableEdgeToEdge()
     setContent {
       AppTheme {
@@ -34,6 +46,13 @@ class MainActivity : ComponentActivity() {
         )
       }
     }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    // Refresh permission state when returning from settings
+    // This is critical for sensitive permissions that don't have callbacks
+    permissionManager.refreshPermissionState()
   }
 }
 

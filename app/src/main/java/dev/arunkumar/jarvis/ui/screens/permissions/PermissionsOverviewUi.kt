@@ -17,12 +17,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -66,25 +65,14 @@ fun PermissionsOverviewUi(
               Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
           }
+        },
+        actions = {
+          IconButton(onClick = { state.eventSink(PermissionsOverviewScreen.Event.RefreshPermissions) }) {
+            Icon(Icons.Default.Refresh, contentDescription = "Refresh permissions")
+          }
         }
       )
     },
-    floatingActionButton = {
-      if (!state.appPermissionState.isFullySetup) {
-        FloatingActionButton(
-          onClick = { state.eventSink(PermissionsOverviewScreen.Event.RequestAllMissingPermissions) }
-        ) {
-          if (state.isLoading) {
-            CircularProgressIndicator(
-              modifier = Modifier.size(24.dp),
-              color = MaterialTheme.colorScheme.onPrimary
-            )
-          } else {
-            Icon(Icons.Default.PlayArrow, contentDescription = "Grant All")
-          }
-        }
-      }
-    }
   ) { paddingValues ->
     // Feature groups list
     LazyColumn(
@@ -120,14 +108,7 @@ private fun FeatureGroupCard(
 ) {
   Card(
     onClick = onClick,
-    modifier = modifier.fillMaxWidth(),
-    colors = CardDefaults.cardColors(
-      containerColor = when (featureGroupState.overallStatus) {
-        FeatureStatus.COMPLETE -> MaterialTheme.colorScheme.surfaceContainer
-        FeatureStatus.PARTIAL -> MaterialTheme.colorScheme.tertiaryContainer
-        FeatureStatus.INCOMPLETE -> MaterialTheme.colorScheme.errorContainer
-      }
-    )
+    modifier = modifier.fillMaxWidth()
   ) {
     Row(
       modifier = Modifier

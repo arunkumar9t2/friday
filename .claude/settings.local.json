@@ -5,7 +5,9 @@
       "Bash(./gradlew:*)",
       "WebFetch(domain:developer.android.com)",
       "Bash(git add:*)",
-      "Bash(adb shell am start:*)"
+      "Bash(adb shell am start:*)",
+      "WebFetch(domain:slackhq.github.io)",
+      "WebFetch(domain:slackhq.github.io)"
     ],
     "deny": []
   }

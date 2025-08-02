@@ -130,6 +130,14 @@ enum class PermissionType(
 
   val isRequiredForCurrentSdk: Boolean
     get() = Build.VERSION.SDK_INT >= minSdkVersion
+
+  /** Check if this permission should be shown in UI (not auto-granted) */
+  val shouldShowInUI: Boolean
+    get() = when {
+      !isRequiredForCurrentSdk -> false
+      this == QUERY_ALL_PACKAGES && Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> false
+      else -> true
+    }
 }
 
 /** Permission protection levels determine how they're granted */

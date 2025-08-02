@@ -97,7 +97,7 @@ fun getAllSpecialPermissions(): List<PermissionType> {
 /** Get permissions grouped by feature */
 fun getPermissionsByFeatureGroup(): Map<FeatureGroup, List<PermissionType>> {
   return PermissionType.values()
-    .filter { it.isRequiredForCurrentSdk }
+    .filter { it.shouldShowInUI }
     .groupBy { it.featureGroup }
     .toSortedMap(compareBy { it.priority })
 }
@@ -105,7 +105,7 @@ fun getPermissionsByFeatureGroup(): Map<FeatureGroup, List<PermissionType>> {
 /** Get all permissions for a specific feature group */
 fun getPermissionsForFeatureGroup(group: FeatureGroup): List<PermissionType> {
   return PermissionType.values().filter {
-    it.featureGroup == group && it.isRequiredForCurrentSdk
+    it.featureGroup == group && it.shouldShowInUI
   }
 }
 
@@ -127,14 +127,16 @@ fun Context.getPermissionState(permission: PermissionType): PermissionState {
 
 /** Get current app permission state */
 fun Context.getCurrentAppPermissionState(): AppPermissionState {
-  val featureGroups = getPermissionsByFeatureGroup().map { (group, permissions) ->
-    val permissionStates = permissions.map { getPermissionState(it) }
-    FeatureGroupState(
-      group = group,
-      permissions = permissionStates,
-      isRequired = true
-    )
-  }
+  val featureGroups = getPermissionsByFeatureGroup()
+    .filter { (_, permissions) -> permissions.isNotEmpty() } // Filter out empty groups
+    .map { (group, permissions) ->
+      val permissionStates = permissions.map { getPermissionState(it) }
+      FeatureGroupState(
+        group = group,
+        permissions = permissionStates,
+        isRequired = true
+      )
+    }
 
   return AppPermissionState(featureGroups = featureGroups)
 }

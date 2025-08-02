@@ -19,44 +19,45 @@ import dagger.hilt.android.components.ActivityComponent
 import dev.arunkumar.jarvis.data.permissions.PermissionManager
 import dev.arunkumar.jarvis.data.permissions.PermissionRequestHandler
 
-/** Presenter for PermissionsOverviewScreen */
-class PermissionsOverviewPresenter @AssistedInject constructor(
-  @Assisted private val screen: PermissionsOverviewScreen,
+/** Presenter for FeatureGroupDetailScreen */
+class FeatureGroupDetailPresenter @AssistedInject constructor(
+  @Assisted private val screen: FeatureGroupDetailScreen,
   @Assisted private val navigator: Navigator,
   private val permissionManager: PermissionManager,
   private val permissionRequestHandler: PermissionRequestHandler
-) : Presenter<PermissionsOverviewScreen.State> {
+) : Presenter<FeatureGroupDetailScreen.State> {
 
   @Composable
-  override fun present(): PermissionsOverviewScreen.State {
+  override fun present(): FeatureGroupDetailScreen.State {
     val appPermissionState by permissionManager.permissionState.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val activity = context as? ComponentActivity
+    // Get permissions for this feature group
+    val permissions = appPermissionState.allPermissions.filter { permissionState ->
+      permissionState.permission.featureGroup == screen.featureGroup
+    }
+
     // Refresh permissions when screen loads
     LaunchedEffect(Unit) {
       permissionManager.refreshPermissionState()
     }
 
-    return PermissionsOverviewScreen.State(
-      appPermissionState = appPermissionState,
-      launchMode = screen.launchMode,
+    return FeatureGroupDetailScreen.State(
+      featureGroup = screen.featureGroup,
+      permissions = permissions,
       isLoading = isLoading,
       eventSink = { event ->
         when (event) {
-          is PermissionsOverviewScreen.Event.RefreshPermissions -> {
-            permissionManager.refreshPermissionState()
-          }
-
-          is PermissionsOverviewScreen.Event.NavigateBack -> {
+          is FeatureGroupDetailScreen.Event.NavigateBack -> {
             navigator.pop()
           }
 
-          is PermissionsOverviewScreen.Event.NavigateToFeatureGroup -> {
-            navigator.goTo(FeatureGroupDetailScreen(featureGroup = event.group))
+          is FeatureGroupDetailScreen.Event.RefreshPermissions -> {
+            permissionManager.refreshPermissionState()
           }
 
-          is PermissionsOverviewScreen.Event.RequestPermission -> {
+          is FeatureGroupDetailScreen.Event.RequestPermission -> {
             activity?.let { act ->
               isLoading = true
               permissionRequestHandler.requestRuntimePermission(
@@ -69,7 +70,7 @@ class PermissionsOverviewPresenter @AssistedInject constructor(
             }
           }
 
-          is PermissionsOverviewScreen.Event.OpenPermissionSettings -> {
+          is FeatureGroupDetailScreen.Event.OpenPermissionSettings -> {
             activity?.let { act ->
               permissionRequestHandler.requestSpecialPermission(
                 activity = act,
@@ -80,18 +81,17 @@ class PermissionsOverviewPresenter @AssistedInject constructor(
               }
             }
           }
-
         }
       }
     )
   }
 
-  @CircuitInject(PermissionsOverviewScreen::class, ActivityComponent::class)
+  @CircuitInject(FeatureGroupDetailScreen::class, ActivityComponent::class)
   @AssistedFactory
   interface Factory {
     fun create(
-      screen: PermissionsOverviewScreen,
+      screen: FeatureGroupDetailScreen,
       navigator: Navigator
-    ): PermissionsOverviewPresenter
+    ): FeatureGroupDetailPresenter
   }
 }
