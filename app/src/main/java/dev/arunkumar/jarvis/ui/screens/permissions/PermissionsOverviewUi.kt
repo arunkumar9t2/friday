@@ -1,6 +1,7 @@
 package dev.arunkumar.jarvis.ui.screens.permissions
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,15 +21,20 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +44,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityComponent
 import dev.arunkumar.jarvis.data.permissions.FeatureGroupState
 import dev.arunkumar.jarvis.data.permissions.FeatureStatus
+import dev.arunkumar.jarvis.ui.state.ListState
 
 /** UI for PermissionsOverviewScreen */
 @CircuitInject(PermissionsOverviewScreen::class, ActivityComponent::class)
@@ -47,8 +54,25 @@ fun PermissionsOverviewUi(
   state: PermissionsOverviewScreen.State,
   modifier: Modifier = Modifier
 ) {
+  val snackbarHostState = remember { SnackbarHostState() }
+
+  // Show message as snackbar
+  state.message?.let { message ->
+    LaunchedEffect(message) {
+      try {
+        snackbarHostState.showSnackbar(
+          message = message.text,
+          duration = SnackbarDuration.Short
+        )
+      } finally {
+        state.eventSink(PermissionsOverviewScreen.Event.OnMessageDismissed)
+      }
+    }
+  }
+
   Scaffold(
     modifier = modifier.fillMaxSize(),
+    snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     topBar = {
       TopAppBar(
         title = {
@@ -61,38 +85,67 @@ fun PermissionsOverviewUi(
         },
         navigationIcon = {
           if (state.launchMode == PermissionsOverviewScreen.LaunchMode.SETTINGS) {
-            IconButton(onClick = { state.eventSink(PermissionsOverviewScreen.Event.NavigateBack) }) {
+            IconButton(onClick = { state.eventSink(PermissionsOverviewScreen.Event.OnNavigateBack) }) {
               Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
           }
         },
         actions = {
-          IconButton(onClick = { state.eventSink(PermissionsOverviewScreen.Event.RefreshPermissions) }) {
+          IconButton(onClick = { state.eventSink(PermissionsOverviewScreen.Event.OnRefresh) }) {
             Icon(Icons.Default.Refresh, contentDescription = "Refresh permissions")
           }
         }
       )
     },
   ) { paddingValues ->
-    // Feature groups list
-    LazyColumn(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues),
-      contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-      items(state.appPermissionState.featureGroups.sortedBy { it.group.priority }) { featureGroup ->
-        FeatureGroupCard(
-          featureGroupState = featureGroup,
-          onClick = {
-            state.eventSink(
-              PermissionsOverviewScreen.Event.NavigateToFeatureGroup(
-                featureGroup.group
-              )
+    when (val featureGroupsState = state.featureGroupsState) {
+      is ListState.Loading -> {
+        Box(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+          contentAlignment = Alignment.Center
+        ) {
+          CircularProgressIndicator()
+        }
+      }
+
+      is ListState.Empty -> {
+        Box(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+          contentAlignment = Alignment.Center
+        ) {
+          Text(
+            text = "No permissions to display",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+        }
+      }
+
+      is ListState.Loaded -> {
+        LazyColumn(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+          contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+          items(featureGroupsState.items, key = { it.group.name }) { featureGroup ->
+            FeatureGroupCard(
+              featureGroupState = featureGroup,
+              onClick = {
+                state.eventSink(
+                  PermissionsOverviewScreen.Event.OnFeatureGroupClick(
+                    featureGroup.group
+                  )
+                )
+              }
             )
           }
-        )
+        }
       }
     }
   }

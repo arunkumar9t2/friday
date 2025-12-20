@@ -18,6 +18,8 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.components.ActivityComponent
 import dev.arunkumar.jarvis.data.permissions.PermissionManager
 import dev.arunkumar.jarvis.data.permissions.PermissionRequestHandler
+import dev.arunkumar.jarvis.data.permissions.PermissionState
+import dev.arunkumar.jarvis.ui.state.ListState
 
 /** Presenter for FeatureGroupDetailScreen */
 class FeatureGroupDetailPresenter @AssistedInject constructor(
@@ -30,56 +32,73 @@ class FeatureGroupDetailPresenter @AssistedInject constructor(
   @Composable
   override fun present(): FeatureGroupDetailScreen.State {
     val appPermissionState by permissionManager.permissionState.collectAsState()
-    var isLoading by remember { mutableStateOf(false) }
+    var permissionsState by remember { mutableStateOf<ListState<PermissionState>>(ListState.Loading) }
+    var message by remember { mutableStateOf<FeatureGroupDetailScreen.Message?>(null) }
     val context = LocalContext.current
     val activity = context as? ComponentActivity
-    // Get permissions for this feature group
-    val permissions = appPermissionState.allPermissions.filter { permissionState ->
-      permissionState.permission.featureGroup == screen.featureGroup
-    }
 
     // Refresh permissions when screen loads
     LaunchedEffect(Unit) {
       permissionManager.refreshPermissionState()
     }
 
+    // Update permissionsState when appPermissionState changes
+    LaunchedEffect(appPermissionState) {
+      val permissions = appPermissionState.allPermissions.filter { permissionState ->
+        permissionState.permission.featureGroup == screen.featureGroup
+      }
+      permissionsState = if (permissions.isEmpty()) {
+        ListState.Empty
+      } else {
+        ListState.Loaded(permissions)
+      }
+    }
+
     return FeatureGroupDetailScreen.State(
       featureGroup = screen.featureGroup,
-      permissions = permissions,
-      isLoading = isLoading,
+      permissionsState = permissionsState,
+      message = message,
       eventSink = { event ->
         when (event) {
-          is FeatureGroupDetailScreen.Event.NavigateBack -> {
+          is FeatureGroupDetailScreen.Event.OnNavigateBack -> {
             navigator.pop()
           }
 
-          is FeatureGroupDetailScreen.Event.RefreshPermissions -> {
+          is FeatureGroupDetailScreen.Event.OnRefresh -> {
+            permissionsState = ListState.Loading
             permissionManager.refreshPermissionState()
           }
 
-          is FeatureGroupDetailScreen.Event.RequestPermission -> {
+          is FeatureGroupDetailScreen.Event.OnRequestPermission -> {
             activity?.let { act ->
-              isLoading = true
+              permissionsState = ListState.Loading
               permissionRequestHandler.requestRuntimePermission(
                 activity = act,
                 permission = event.permission
               ) { granted ->
-                isLoading = false
                 permissionManager.refreshPermissionState()
+                message = if (granted) {
+                  FeatureGroupDetailScreen.Message.Success("Permission granted")
+                } else {
+                  FeatureGroupDetailScreen.Message.Error("Permission denied")
+                }
               }
             }
           }
 
-          is FeatureGroupDetailScreen.Event.OpenPermissionSettings -> {
+          is FeatureGroupDetailScreen.Event.OnOpenSettings -> {
             activity?.let { act ->
               permissionRequestHandler.requestSpecialPermission(
                 activity = act,
                 permission = event.permission
               ) {
-                // Refresh permission state when user returns
                 permissionManager.refreshPermissionState()
               }
             }
+          }
+
+          is FeatureGroupDetailScreen.Event.OnMessageDismissed -> {
+            message = null
           }
         }
       }
