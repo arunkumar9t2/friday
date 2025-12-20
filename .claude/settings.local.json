@@ -7,7 +7,22 @@
       "Bash(git add:*)",
       "Bash(adb shell am start:*)",
       "WebFetch(domain:slackhq.github.io)",
-      "WebFetch(domain:slackhq.github.io)"
+      "Bash(cat:*)",
+      "Bash(bd ready:*)",
+      "Bash(bd list:*)",
+      "Bash(bd show:*)",
+      "Bash(bd create:*)",
+      "Bash(bd update:*)",
+      "Bash(bd close:*)",
+      "Bash(bd blocked:*)",
+      "Bash(bd dep tree:*)",
+      "Bash(bd dep add:*)",
+      "Bash(bd dep remove:*)",
+      "Bash(bd stats:*)",
+      "Bash(bd export:*)",
+      "Bash(bd epic status:*)",
+      "Bash(bd help:*)",
+      "Bash(bd hooks:*)"
     ],
     "deny": []
   }

@@ -12,6 +12,36 @@ repository.
 - **Install debug APK**: `./gradlew installDebug`
 - **Lint check**: `./gradlew lint`
 
+## Task Tracking with Beads
+
+Work tracked in `.beads/` (git-integrated issue tracker).
+
+**Essential commands**:
+```bash
+bd ready                                     # Pending ready tasks
+bd show <id>                                 # View task details
+bd update <id> --status=in_progress          # Start task
+bd close <id> --reason="..."                 # Complete task (reason required)
+bd blocked                                   # See blocked tasks
+```
+
+**Dependency inspection**:
+```bash
+bd dep tree <id> --direction=up    # What this task blocks (dependents)
+bd dep tree <id> --direction=down  # What blocks this task (dependencies)
+bd list --blocked-by <id>          # Tasks blocked by specific issue
+```
+
+**Workflow**:
+- Pick from scoped ready list -> start -> finish -> refresh
+- Prioritize tasks that unblock others (check `Blocks` count in `bd show`)
+- Always close tasks with `bd close --reason` when done
+
+**Task hygiene**:
+- Always set parent epic: `bd create "Task" --type task --parent <epic-id>`
+- Add 1-2 domain labels per task
+- Normalize priority for active work (P1-P2)
+
 ## Architecture Overview
 
 This is an Android application built with **Circuit** architecture pattern and **Hilt** dependency
