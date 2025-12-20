@@ -1,16 +1,18 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this
-repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Build Commands
 
-- **Build project**: `./gradlew build`
-- **Run tests**: `./gradlew test`
-- **Run instrumented tests**: `./gradlew connectedAndroidTest`
-- **Clean build**: `./gradlew clean`
-- **Install debug APK**: `./gradlew installDebug`
-- **Lint check**: `./gradlew lint`
+```bash
+./gradlew build                    # Build project
+./gradlew test                     # Run all tests
+./gradlew test --tests "*.MyTest"  # Run single test class
+./gradlew connectedAndroidTest     # Instrumented tests
+./gradlew installDebug             # Install debug APK
+./gradlew lint                     # Lint check
+./gradlew clean                    # Clean build
+```
 
 ## Task Tracking with Beads
 
@@ -18,85 +20,78 @@ Work tracked in `.beads/` (git-integrated issue tracker).
 
 **Essential commands**:
 ```bash
-bd ready                                     # Pending ready tasks
-bd show <id>                                 # View task details
-bd update <id> --status=in_progress          # Start task
-bd close <id> --reason="..."                 # Complete task (reason required)
-bd blocked                                   # See blocked tasks
+bd ready                              # Pending ready tasks
+bd show <id>                          # View task details
+bd update <id> --status=in_progress   # Start task
+bd close <id> --reason "..."          # Complete task (reason required)
+bd blocked                            # See blocked tasks
 ```
 
 **Dependency inspection**:
 ```bash
-bd dep tree <id> --direction=up    # What this task blocks (dependents)
-bd dep tree <id> --direction=down  # What blocks this task (dependencies)
-bd list --blocked-by <id>          # Tasks blocked by specific issue
+bd dep tree <id> --direction=up    # What this task blocks
+bd dep tree <id> --direction=down  # What blocks this task
 ```
 
-**Workflow**:
-- Pick from scoped ready list -> start -> finish -> refresh
-- Prioritize tasks that unblock others (check `Blocks` count in `bd show`)
-- Always close tasks with `bd close --reason` when done
-
-**Task hygiene**:
-- Always set parent epic: `bd create "Task" --type task --parent <epic-id>`
-- Add 1-2 domain labels per task
-- Normalize priority for active work (P1-P2)
+**Workflow**: Pick from ready list → start → finish with reason → refresh
 
 ## Architecture Overview
 
-This is an Android application built with **Circuit** architecture pattern and **Hilt** dependency
-injection. The project follows a unidirectional data flow pattern with clear separation of concerns.
+Android app using **Circuit** (UI) + **Hilt** (DI) with unidirectional data flow.
 
-### Core Architecture Components
+**Package**: `dev.arunkumar.jarvis`
 
-1. **Circuit Framework**: UI architecture using Slack's Circuit library
+### Project Structure
 
-- Screens are Kotlin data classes implementing the `Screen` interface
-- UI components are Composables annotated with `@CircuitInject`
-- Presenters handle business logic and state management
-- Events represent user actions dispatched through eventSink
+```
+app/src/main/java/dev/arunkumar/jarvis/
+├── di/                    # Hilt modules (AppModule, CircuitModule, AiModule)
+├── data/
+│   ├── ai/                # AiProvider interface, AiExecutionState
+│   ├── permissions/       # Permission system (11 types, 6 feature groups)
+│   ├── termux/            # Termux command execution
+│   ├── repository/        # UserRepository
+│   └── service/           # ApiService (mock)
+└── ui/
+    ├── screens/           # Circuit screens (home, details, settings, permissions)
+    └── theme/             # Material3 theming
+```
 
-2. **Dependency Injection**: Hilt with Circuit integration
+### Key Features
 
-- Code generation mode set to "hilt" in `app/build.gradle.kts:46`
-- Circuit module configures presenter and UI factories in `di/CircuitModule.kt`
-- Components use `@CircuitInject` with `ActivityComponent::class`
+**Termux AI Integration** (`data/termux/`):
+- `TermuxAiProvider` implements `AiProvider` interface
+- Executes scripts via Termux RUN_COMMAND intent
+- `TermuxCommandExecutor` manages execution flow with PendingIntent results
+- States: Idle → Preparing → Running → Success/Error
 
-3. **Project Structure**:
+**Permission System** (`data/permissions/`):
+- `PermissionType.kt` defines DANGEROUS + SPECIAL permissions grouped by feature
+- `PermissionManager` - StateFlow-based central state
+- `PermissionRequestHandler` - Handles runtime + settings redirects
 
-- `app/src/main/java/dev/arunkumar/jarvis/`
-  - `di/` - Dependency injection modules (AppModule, CircuitModule)
-  - `ui/screens/` - Screen definitions, presenters, and UI components
-  - `ui/theme/` - Compose theme and styling
-  - `data/` - Repository and service layer
+### Circuit Pattern
 
-### Key Dependencies
+Each screen has:
+1. **Screen** data class in `Screens.kt` with State/Event interfaces
+2. **Presenter** with `@AssistedInject` + `@CircuitInject`
+3. **UI** Composable with `@CircuitInject`
 
-- Circuit 0.23.1 for UI architecture
-- Hilt 2.57 for dependency injection
-- Jetpack Compose with Material3
-- Kotlin Parcelize for state preservation
+Flow: User Action → Event → Presenter → State → UI Recomposition
 
-### Development Notes
+### Key Files
 
-- Uses KSP for code generation with Circuit codegen
-- Minimum SDK 28, Target SDK 36
-- Kotlin 2.0.21 with Java 11 compatibility
-- Detailed architecture documentation available in `docs/Arch.md`
+| Component | Path |
+|-----------|------|
+| DI Setup | `di/CircuitModule.kt`, `di/AiModule.kt` |
+| Screen Definitions | `ui/screens/Screens.kt` |
+| Permission Types | `data/permissions/PermissionType.kt` |
+| Permission Manager | `data/permissions/PermissionManager.kt` |
+| Termux Provider | `data/termux/TermuxAiProvider.kt` |
+| Architecture Docs | `docs/Arch.md` |
 
-### Code Style Guidelines
+### Code Style
 
-- **String Resources**: All user-facing strings should be stored in `app/src/main/res/values/strings.xml`
-- **Permission Rationale**: Permission rationale explanations must be in XML string resources, not hardcoded in Kotlin classes
-- **Localization**: Use string resources to support future internationalization
-
-### Circuit Pattern Implementation
-
-Each screen follows this pattern:
-
-1. Screen data class with State and Event sealed interfaces
-2. UI Composable annotated with `@CircuitInject`
-3. Presenter class with `@AssistedInject` handling state and events
-4. Factory interface for presenter creation
-
-State flows: User interaction → Event → Presenter → State update → UI recomposition
+- All user-facing strings in `res/values/strings.xml`
+- Permission rationales in XML string resources, not hardcoded
+- Use `@Stable`/`@Immutable` on State classes
