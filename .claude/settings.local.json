@@ -22,7 +22,8 @@
       "Bash(bd export:*)",
       "Bash(bd epic status:*)",
       "Bash(bd help:*)",
-      "Bash(bd hooks:*)"
+      "Bash(bd hooks:*)",
+      "mcp__gemini-cli__ask-gemini"
     ],
     "deny": []
   }
