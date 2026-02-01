@@ -14,4 +14,17 @@
   <string name="permission_rationale_notification_listener">Notification access allows Jarvis to read and manage all your notifications intelligently.</string>
   <string name="permission_rationale_accessibility_service">Accessibility service enables Jarvis to provide system-wide assistance and automation.</string>
   <string name="permission_rationale_query_all_packages">Package visibility helps Jarvis understand what apps you have installed for better integration.</string>
+
+  <!-- TickTick Integration -->
+  <string name="ticktick_channel_name">TickTick</string>
+  <string name="ticktick_channel_description">Persistent notifications for TickTick tasks</string>
+  <string name="ticktick_tasks">Tasks</string>
+  <string name="ticktick_loading">Loading</string>
+  <string name="ticktick_no_tasks">No tasks to display</string>
+  <string name="ticktick_today">Today</string>
+  <string name="ticktick_overdue">OVERDUE</string>
+  <string name="ticktick_upcoming">UPCOMING</string>
+  <string name="ticktick_add_task">Add task</string>
+  <string name="ticktick_refresh">Refresh</string>
+  <string name="permission_rationale_ticktick">TickTick task access allows Jarvis to display your tasks and provide task management.</string>
 </resources>

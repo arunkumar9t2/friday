@@ -15,6 +15,7 @@ import com.slack.circuit.foundation.rememberCircuitNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import dev.arunkumar.jarvis.data.permissions.PermissionLauncherManager
 import dev.arunkumar.jarvis.data.permissions.PermissionManager
+import dev.arunkumar.jarvis.service.TickTickService.Companion.startTickTickService
 import dev.arunkumar.jarvis.ui.screens.HomeScreen
 import dev.arunkumar.jarvis.ui.theme.AppTheme
 import javax.inject.Inject
@@ -37,6 +38,8 @@ class MainActivity : ComponentActivity() {
     // Initialize permission launcher before activity reaches STARTED state
     permissionLauncherManager.initialize(this)
     
+    startTickTickService()
+
     enableEdgeToEdge()
     setContent {
       AppTheme {

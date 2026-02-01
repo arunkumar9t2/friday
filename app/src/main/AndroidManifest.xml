@@ -59,9 +59,25 @@
     android:minSdkVersion="30"
     tools:ignore="QueryAllPackagesPermission" />
 
+  <!-- Foreground service for TickTick notifications (Android 14+) -->
+  <uses-permission
+    android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+    android:minSdkVersion="34" />
+
+  <!-- ==================== HARDWARE FEATURES (optional for ChromeOS) ==================== -->
+  <uses-feature
+    android:name="android.hardware.camera"
+    android:required="false" />
+  <uses-feature
+    android:name="android.hardware.telephony"
+    android:required="false" />
+
   <!-- ==================== THIRD-PARTY PERMISSIONS ==================== -->
   <!-- Termux command execution -->
   <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+
+  <!-- TickTick task access -->
+  <uses-permission android:name="com.ticktick.task.permission.READ_TASKS" />
 
   <application
     android:name=".Jarvis"
@@ -120,6 +136,21 @@
     <service
       android:name=".data.termux.TermuxResultReceiver"
       android:exported="false" />
+
+    <!-- ==================== TICKTICK INTEGRATION ==================== -->
+    <!-- TickTick foreground service for persistent task notification -->
+    <service
+      android:name=".service.TickTickService"
+      android:exported="false"
+      android:foregroundServiceType="specialUse">
+      <property
+        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+        android:value="Persistent notification displaying user's TickTick tasks" />
+    </service>
   </application>
+
+  <queries>
+    <package android:name="com.ticktick.task" />
+  </queries>
 
 </manifest>

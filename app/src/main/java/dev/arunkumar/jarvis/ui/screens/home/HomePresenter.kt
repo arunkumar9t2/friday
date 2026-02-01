@@ -16,6 +16,7 @@ import dagger.hilt.android.components.ActivityComponent
 import dev.arunkumar.jarvis.ui.screens.DetailsScreen
 import dev.arunkumar.jarvis.ui.screens.HomeScreen
 import dev.arunkumar.jarvis.ui.screens.SettingsScreen
+import dev.arunkumar.jarvis.ui.screens.TasksScreen
 
 class HomePresenter @AssistedInject constructor(
     @Assisted private val screen: HomeScreen,
@@ -42,6 +43,9 @@ class HomePresenter @AssistedInject constructor(
                     }
                     HomeScreen.Event.OnNavigateToSettings -> {
                         navigator.goTo(SettingsScreen())
+                    }
+                    HomeScreen.Event.OnNavigateToTasks -> {
+                        navigator.goTo(TasksScreen())
                     }
                 }
             }

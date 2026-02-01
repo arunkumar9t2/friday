@@ -31,6 +31,7 @@ data class HomeScreen(val id: String = "") : AppScreen {
     data object OnIncrementClicked : Event
     data object OnNavigateToDetails : Event
     data object OnNavigateToSettings : Event
+    data object OnNavigateToTasks : Event
   }
 }
 
@@ -77,6 +78,12 @@ data class SettingsScreen(val id: String = "") : AppScreen {
     data object OnNotificationsToggled : Event
     data object OnPermissionsClicked : Event
   }
+}
+
+@Parcelize
+@Immutable
+data class TasksScreen(val id: String = "") : AppScreen {
+  override fun toString() = "TasksScreen"
 }
 
 @Parcelize

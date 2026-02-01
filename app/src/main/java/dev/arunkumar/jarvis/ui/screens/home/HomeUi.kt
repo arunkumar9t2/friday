@@ -133,6 +133,13 @@ fun HomeUi(state: HomeScreen.State, modifier: Modifier = Modifier) {
                             Text("Settings")
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { state.eventSink(HomeScreen.Event.OnNavigateToTasks) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Tasks")
+                    }
                 }
             }
         }

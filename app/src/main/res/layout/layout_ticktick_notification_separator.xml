@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_gravity="center_vertical"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  android:paddingStart="36dp"
+  android:paddingEnd="36dp">
+
+  <FrameLayout
+    android:layout_width="0dp"
+    android:layout_height="0.2dp"
+    android:layout_weight="1"
+    android:background="@color/ticktick_notification_separator" />
+
+  <TextView
+    android:id="@+id/ticktick_notification_separator"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:gravity="center"
+    android:maxLines="1"
+    android:text="@string/ticktick_overdue"
+    android:textAppearance="@style/TextAppearance.Compat.Notification.Time"
+    android:textColor="@color/ticktick_notification_separator"
+    android:textSize="9sp" />
+
+  <FrameLayout
+    android:layout_width="0dp"
+    android:layout_height="0.2dp"
+    android:layout_weight="1"
+    android:background="@color/ticktick_notification_separator" />
+
+</LinearLayout>

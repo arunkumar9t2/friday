@@ -126,6 +126,15 @@ enum class PermissionType(
     displayName = "Query All Packages",
     description = "See all installed apps for smart integration",
     featureGroup = FeatureGroup.SYSTEM_INTEGRATION
+  ),
+
+  // ==================== THIRD-PARTY PERMISSIONS ====================
+  READ_TICKTICK_TASKS(
+    permission = "com.ticktick.task.permission.READ_TASKS",
+    protectionLevel = ProtectionLevel.NORMAL,
+    displayName = "TickTick Tasks",
+    description = "Read tasks from TickTick for display and management",
+    featureGroup = FeatureGroup.APP_INTEGRATION
   );
 
   val isRequiredForCurrentSdk: Boolean

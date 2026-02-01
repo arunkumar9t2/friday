@@ -147,6 +147,9 @@ class PermissionRequestHandler @Inject constructor(
 
       PermissionType.QUERY_ALL_PACKAGES ->
         context.getString(R.string.permission_rationale_query_all_packages)
+
+      PermissionType.READ_TICKTICK_TASKS ->
+        context.getString(R.string.permission_rationale_ticktick)
     }
   }
 }
