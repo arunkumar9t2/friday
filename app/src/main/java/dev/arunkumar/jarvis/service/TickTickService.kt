@@ -120,7 +120,7 @@ class TickTickService : Service() {
       .setStyle(NotificationCompat.DecoratedCustomViewStyle())
       .setColorized(true)
       .setColor(ContextCompat.getColor(this, R.color.ticktick_notification_color))
-      .setSmallIcon(R.mipmap.ic_launcher)
+      .setSmallIcon(R.drawable.ic_jarvis_notification)
       .setPriority(NotificationCompat.PRIORITY_LOW)
       .setShowWhen(false)
       .setCategory(Notification.CATEGORY_EVENT)
