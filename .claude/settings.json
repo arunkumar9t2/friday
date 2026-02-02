@@ -23,7 +23,12 @@
       "Bash(bd epic status:*)",
       "Bash(bd help:*)",
       "Bash(bd hooks:*)",
-      "mcp__gemini-cli__ask-gemini"
+      "mcp__gemini-cli__ask-gemini",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
