@@ -72,10 +72,6 @@
     android:name="android.hardware.telephony"
     android:required="false" />
 
-  <!-- ==================== THIRD-PARTY PERMISSIONS ==================== -->
-  <!-- Termux command execution -->
-  <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
-
   <application
     android:name=".Jarvis"
     android:allowBackup="true"
@@ -127,12 +123,6 @@
       android:name=".service.AssistantService"
       android:exported="false"
       android:foregroundServiceType="microphone|camera" />
-
-    <!-- ==================== AI BACKEND SERVICES ==================== -->
-    <!-- Termux result receiver service -->
-    <service
-      android:name=".data.termux.TermuxResultReceiver"
-      android:exported="false" />
 
     <!-- ==================== TICKTICK INTEGRATION ==================== -->
     <!-- TickTick foreground service for persistent task notification -->

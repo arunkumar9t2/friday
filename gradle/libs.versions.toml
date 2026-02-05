@@ -53,10 +53,6 @@ circuit-codegen = { group = "com.slack.circuit", name = "circuit-codegen", versi
 # Google Fonts dependency
 androidx-compose-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "googleFonts" }
 
-# Termux integration dependencies
-termux-shared = { group = "com.termux.termux-app", name = "termux-shared", version = "0.118.0" }
-guava-listenablefuture = { group = "com.google.guava", name = "listenablefuture", version = "9999.0-empty-to-avoid-conflict-with-guava" }
-
 # Room dependencies
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }

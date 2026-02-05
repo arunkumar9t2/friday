@@ -5,14 +5,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build Commands
 
 ```bash
-./gradlew build                    # Build project
-./gradlew test                     # Run all tests
-./gradlew test --tests "*.MyTest"  # Run single test class
-./gradlew connectedAndroidTest     # Instrumented tests
-./gradlew installDebug             # Install debug APK
+./gradlew assembleDebug            # Compile debug APK (fast verification)
+./gradlew test                     # Run unit tests
 ./gradlew lint                     # Lint check
+./gradlew test --tests "*.MyTest"  # Run single test class
+./gradlew connectedAndroidTest     # Instrumented tests (requires device)
+./gradlew installDebug             # Install debug APK
 ./gradlew clean                    # Clean build
 ```
+
+**Prefer targeted tasks** over `./gradlew build` which runs assemble + test + lint together.
 
 ## Task Tracking with Beads
 
@@ -45,11 +47,10 @@ Android app using **Circuit** (UI) + **Hilt** (DI) with unidirectional data flow
 
 ```
 app/src/main/java/dev/arunkumar/jarvis/
-├── di/                    # Hilt modules (AppModule, CircuitModule, AiModule)
+├── di/                    # Hilt modules (AppModule, CircuitModule)
 ├── data/
-│   ├── ai/                # AiProvider interface, AiExecutionState
 │   ├── permissions/       # Permission system (11 types, 6 feature groups)
-│   ├── termux/            # Termux command execution
+│   ├── ticktick/          # TickTick task sync (REST + Room)
 │   ├── repository/        # UserRepository
 │   └── service/           # ApiService (mock)
 └── ui/
@@ -59,16 +60,15 @@ app/src/main/java/dev/arunkumar/jarvis/
 
 ### Key Features
 
-**Termux AI Integration** (`data/termux/`):
-- `TermuxAiProvider` implements `AiProvider` interface
-- Executes scripts via Termux RUN_COMMAND intent
-- `TermuxCommandExecutor` manages execution flow with PendingIntent results
-- States: Idle → Preparing → Running → Success/Error
-
 **Permission System** (`data/permissions/`):
 - `PermissionType.kt` defines DANGEROUS + SPECIAL permissions grouped by feature
 - `PermissionManager` - StateFlow-based central state
 - `PermissionRequestHandler` - Handles runtime + settings redirects
+
+**TickTick Integration** (`data/ticktick/`):
+- REST API → Room cache with on-demand WorkManager sync
+- `TickTickRepository` - offline-first task/project access
+- `TickTickService` - foreground notification with refresh trigger
 
 ### Circuit Pattern
 
@@ -83,11 +83,11 @@ Flow: User Action → Event → Presenter → State → UI Recomposition
 
 | Component | Path |
 |-----------|------|
-| DI Setup | `di/CircuitModule.kt`, `di/AiModule.kt` |
+| DI Setup | `di/CircuitModule.kt` |
 | Screen Definitions | `ui/screens/Screens.kt` |
 | Permission Types | `data/permissions/PermissionType.kt` |
 | Permission Manager | `data/permissions/PermissionManager.kt` |
-| Termux Provider | `data/termux/TermuxAiProvider.kt` |
+| TickTick Repository | `data/ticktick/TickTickRepository.kt` |
 | Architecture Docs | `docs/Arch.md` |
 
 ### Code Style

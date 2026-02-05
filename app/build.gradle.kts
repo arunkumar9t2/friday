@@ -79,10 +79,6 @@ dependencies {
   implementation(libs.circuit.codegen.annotations)
   ksp(libs.circuit.codegen)
 
-  // Termux integration dependencies
-  implementation(libs.termux.shared)
-  implementation(libs.guava.listenablefuture)
-
   // Room dependencies
   implementation(libs.room.runtime)
   implementation(libs.room.ktx)
