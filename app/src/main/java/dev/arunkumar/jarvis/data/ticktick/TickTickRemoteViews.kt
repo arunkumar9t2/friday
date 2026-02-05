@@ -58,8 +58,8 @@ private fun TickTickNotificationItem.TickTickTaskItem.buildRemoteView(
       R.id.ticktick_notification_item_root,
       PendingIntent.getActivity(
         context,
-        taskId.toInt(),
-        TickTickContentProvider.viewTaskIntent(projectId, taskId),
+        taskId.hashCode(),
+        TickTickIntents.viewTaskIntent(projectId, taskId),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       ),
     )

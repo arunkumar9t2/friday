@@ -1,8 +1,8 @@
 package dev.arunkumar.jarvis.data.ticktick
 
 data class TickTickTask(
-  val id: Long,
-  val projectId: Long,
+  val id: String,
+  val projectId: String,
   val title: String,
   val dueDate: Long,
   val sortOrder: Long,

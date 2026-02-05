@@ -76,9 +76,6 @@
   <!-- Termux command execution -->
   <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
-  <!-- TickTick task access -->
-  <uses-permission android:name="com.ticktick.task.permission.READ_TASKS" />
-
   <application
     android:name=".Jarvis"
     android:allowBackup="true"
@@ -147,6 +144,18 @@
         android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
         android:value="Persistent notification displaying user's TickTick tasks" />
     </service>
+
+    <!-- Disable default WorkManager initializer (using HiltWorkerFactory) -->
+    <provider
+      android:name="androidx.startup.InitializationProvider"
+      android:authorities="${applicationId}.androidx-startup"
+      android:exported="false"
+      tools:node="merge">
+      <meta-data
+        android:name="androidx.work.WorkManagerInitializer"
+        android:value="androidx.startup"
+        tools:node="remove" />
+    </provider>
   </application>
 
   <queries>

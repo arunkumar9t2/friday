@@ -13,9 +13,11 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
+import dev.arunkumar.jarvis.data.ticktick.TickTickSyncWorker
 import dev.arunkumar.jarvis.R
-import dev.arunkumar.jarvis.data.ticktick.TickTickContentProvider
+import dev.arunkumar.jarvis.data.ticktick.TickTickIntents
 import dev.arunkumar.jarvis.data.ticktick.TickTickNotificationItem
 import dev.arunkumar.jarvis.data.ticktick.TickTickNotificationItem.TickTickTaskItem
 import dev.arunkumar.jarvis.data.ticktick.TickTickRepository
@@ -38,6 +40,9 @@ class TickTickService : Service() {
 
   @Inject
   lateinit var notificationManager: NotificationManager
+
+  @Inject
+  lateinit var workManager: WorkManager
 
   private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -67,7 +72,7 @@ class TickTickService : Service() {
           .getResultsFromIntent(incomingIntent)
           ?.getCharSequence(REPLY_ADD_TASK)
         if (replyContent != null) {
-          val insertIntent = repository.getInsertTaskIntent(projectId = 0).apply {
+          val insertIntent = repository.getInsertTaskIntent(projectId = "0").apply {
             putExtra("title", replyContent.toString())
           }
           startActivity(insertIntent)
@@ -81,6 +86,8 @@ class TickTickService : Service() {
   private fun refreshNotification() {
     serviceScope.launch {
       try {
+        // Trigger one-time sync in background
+        TickTickSyncWorker.enqueueOneTimeSync(workManager)
         val items = repository.getNotificationItems()
         val title = items.filterIsInstance<TickTickTaskItem>()
           .firstOrNull()
@@ -111,7 +118,7 @@ class TickTickService : Service() {
         PendingIntent.getActivity(
           this,
           NOTIFICATION_ID,
-          packageManager.getLaunchIntentForPackage(TickTickContentProvider.TICKTICK_PACKAGE)
+          packageManager.getLaunchIntentForPackage(TickTickIntents.TICKTICK_PACKAGE)
             ?: Intent(),
           PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )

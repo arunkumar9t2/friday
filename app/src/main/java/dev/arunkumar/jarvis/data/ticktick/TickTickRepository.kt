@@ -6,22 +6,22 @@ import javax.inject.Singleton
 
 @Singleton
 class TickTickRepository @Inject constructor(
-  private val contentProvider: TickTickContentProvider,
+  private val taskDao: TaskDao,
+  private val projectDao: ProjectDao,
+  private val syncManager: TickTickSyncManager,
 ) {
 
-  suspend fun getPendingTasks(): List<TickTickTask> {
-    return contentProvider.getPendingTasks()
-  }
+  suspend fun refresh(): SyncResult = syncManager.sync()
 
-  suspend fun getAllProjects(): List<TickTickProject> {
-    return contentProvider.getAllProjects()
-  }
+  suspend fun getPendingTasks(): List<TickTickTask> =
+    taskDao.getPendingTasks().map { it.toDomain() }
+
+  suspend fun getAllProjects(): List<TickTickProject> =
+    projectDao.getAllProjects().map { it.toDomain() }
 
   suspend fun getNotificationItems(limit: Int = 6): List<TickTickNotificationItem> {
-    val projectsById = contentProvider.getAllProjects()
-      .associateBy(TickTickProject::id)
-
-    val rawTasks = contentProvider.getPendingTasks().take(limit)
+    val projectsById = getAllProjects().associateBy(TickTickProject::id)
+    val rawTasks = getPendingTasks().take(limit)
 
     return buildList {
       if (rawTasks.size > 1) {
@@ -43,13 +43,12 @@ class TickTickRepository @Inject constructor(
     }
   }
 
-  fun getInsertTaskIntent(projectId: Long): Intent {
-    return contentProvider.insertTaskIntent(projectId)
-  }
+  fun getInsertTaskIntent(projectId: String): Intent =
+    TickTickIntents.insertTaskIntent(projectId)
 
   private fun mapToNotificationItem(
     task: TickTickTask,
-    projectsById: Map<Long, TickTickProject>,
+    projectsById: Map<String, TickTickProject>,
   ): TickTickNotificationItem.TickTickTaskItem {
     val project = projectsById[task.projectId]
     return TickTickNotificationItem.TickTickTaskItem(

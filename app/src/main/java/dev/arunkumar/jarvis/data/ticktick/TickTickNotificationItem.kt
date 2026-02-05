@@ -3,8 +3,8 @@ package dev.arunkumar.jarvis.data.ticktick
 sealed class TickTickNotificationItem {
 
   data class TickTickTaskItem(
-    val taskId: Long,
-    val projectId: Long,
+    val taskId: String,
+    val projectId: String,
     val title: String,
     val dueDate: Long,
     val priority: Int,

@@ -16,7 +16,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.arunkumar.jarvis.data.ticktick.TickTickContentProvider
+import dev.arunkumar.jarvis.data.ticktick.TickTickIntents
 import dev.arunkumar.jarvis.data.ticktick.TickTickPriority
 import dev.arunkumar.jarvis.data.ticktick.TickTickRepository
 import dev.arunkumar.jarvis.data.ticktick.formatDueDate
@@ -66,7 +66,7 @@ class TasksPresenter @AssistedInject constructor(
           TasksEvent.OnRefresh -> refreshTrigger++
           TasksEvent.OnNavigateBack -> navigator.pop()
           is TasksEvent.OnTaskClick -> {
-            val intent = TickTickContentProvider.viewTaskIntent(event.projectId, event.taskId)
+            val intent = TickTickIntents.viewTaskIntent(event.projectId, event.taskId)
             context.startActivity(intent)
           }
         }

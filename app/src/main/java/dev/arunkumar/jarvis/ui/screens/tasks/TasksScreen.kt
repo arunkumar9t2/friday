@@ -9,8 +9,8 @@ import dev.arunkumar.jarvis.ui.state.ListState
 @Stable
 @Immutable
 data class TaskDisplayItem(
-  val taskId: Long,
-  val projectId: Long,
+  val taskId: String,
+  val projectId: String,
   val title: String,
   val dueDate: Long,
   val formattedDate: String,
@@ -29,5 +29,5 @@ data class TasksState(
 sealed interface TasksEvent : CircuitUiEvent {
   data object OnRefresh : TasksEvent
   data object OnNavigateBack : TasksEvent
-  data class OnTaskClick(val taskId: Long, val projectId: Long) : TasksEvent
+  data class OnTaskClick(val taskId: String, val projectId: String) : TasksEvent
 }

@@ -3,6 +3,7 @@ plugins {
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.kotlin.parcelize)
+  alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.hilt)
   alias(libs.plugins.ksp)
 }
@@ -19,6 +20,11 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    // TickTick API configuration
+    val ticktickApiKey: String = project.findProperty("TICKTICK_API_KEY") as? String ?: ""
+    buildConfigField("String", "TICKTICK_API_KEY", "\"$ticktickApiKey\"")
+    buildConfigField("String", "TICKTICK_API_BASE_URL", "\"https://ticktick-proxy-j5wtc3hzxq-uc.a.run.app/\"")
   }
 
   buildTypes {
@@ -39,6 +45,7 @@ android {
   }
   buildFeatures {
     compose = true
+    buildConfig = true
   }
 }
 
@@ -75,6 +82,23 @@ dependencies {
   // Termux integration dependencies
   implementation(libs.termux.shared)
   implementation(libs.guava.listenablefuture)
+
+  // Room dependencies
+  implementation(libs.room.runtime)
+  implementation(libs.room.ktx)
+  ksp(libs.room.compiler)
+
+  // Retrofit and networking dependencies
+  implementation(libs.retrofit)
+  implementation(libs.okhttp)
+  implementation(libs.okhttp.logging)
+  implementation(libs.kotlinx.serialization.json)
+  implementation(libs.retrofit.kotlinx.serialization)
+
+  // WorkManager dependencies
+  implementation(libs.work.runtime.ktx)
+  implementation(libs.hilt.work)
+  ksp(libs.hilt.work.compiler)
 
   // Test dependencies
   testImplementation(libs.junit)
