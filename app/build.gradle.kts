@@ -1,4 +1,5 @@
 plugins {
+  id("jarvis.local-properties")
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
@@ -22,7 +23,7 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     // TickTick API configuration
-    val ticktickApiKey: String = project.findProperty("TICKTICK_API_KEY") as? String ?: ""
+    val ticktickApiKey: String = project.extra.properties["TICKTICK_API_KEY"] as? String ?: ""
     buildConfigField("String", "TICKTICK_API_KEY", "\"$ticktickApiKey\"")
     buildConfigField("String", "TICKTICK_API_BASE_URL", "\"https://ticktick-proxy-j5wtc3hzxq-uc.a.run.app/\"")
   }
