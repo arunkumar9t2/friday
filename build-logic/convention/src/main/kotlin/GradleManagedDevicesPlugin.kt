@@ -22,36 +22,15 @@ class GradleManagedDevicesPlugin : Plugin<Project> {
             animationsDisabled = true
 
             managedDevices {
-                // Primary device - small footprint, hardware rendering
-                localDevices.maybeCreate("pixel4Api30").apply {
-                    device = "Pixel 4"
-                    apiLevel = 30
-                    systemImageSource = "aosp"
-                    testedAbi = "x86_64"
-                }
-                // minSdk boundary testing (matches app minSdk=28)
-                localDevices.maybeCreate("pixel4Api28").apply {
-                    device = "Pixel 4"
-                    apiLevel = 28
-                    systemImageSource = "aosp"
-                    testedAbi = "x86_64"
-                }
-                // Latest API with Play Services
-                localDevices.maybeCreate("pixel6Api34").apply {
+                localDevices.maybeCreate("pixel6Api36").apply {
                     device = "Pixel 6"
-                    apiLevel = 34
-                    systemImageSource = "google"
+                    apiLevel = 36
+                    systemImageSource = "google_apis_playstore"
                     testedAbi = "x86_64"
                 }
 
                 groups.maybeCreate("phone").apply {
-                    targetDevices.addAll(localDevices.matching { it.name == "pixel4Api30" })
-                }
-                groups.maybeCreate("minSdk").apply {
-                    targetDevices.addAll(localDevices.matching { it.name == "pixel4Api28" })
-                }
-                groups.maybeCreate("latest").apply {
-                    targetDevices.addAll(localDevices.matching { it.name == "pixel6Api34" })
+                    targetDevices.addAll(localDevices.matching { it.name == "pixel6Api36" })
                 }
             }
         }
