@@ -12,5 +12,9 @@ gradlePlugin {
             id = "jarvis.local-properties"
             implementationClass = "LocalPropertiesPlugin"
         }
+        register("managedDevices") {
+            id = "jarvis.managed-devices"
+            implementationClass = "GradleManagedDevicesPlugin"
+        }
     }
 }
