@@ -56,6 +56,7 @@ ksp {
 }
 
 dependencies {
+  implementation(project(":shared:models"))
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)

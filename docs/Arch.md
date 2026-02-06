@@ -191,3 +191,140 @@ The architecture supports testing at multiple levels:
 - [Circuit Documentation](https://slackhq.github.io/circuit/)
 - [Compose Documentation](https://developer.android.com/jetpack/compose)
 - [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
+
+---
+
+# Monorepo Architecture
+
+## Monorepo Structure
+
+The Jarvis project is organized as a monorepo with multiple modules:
+
+- **mobile/app**: Android frontend (Circuit + Hilt)
+- **backend/server**: Ktor REST API (Firebase Auth, Firestore)
+- **shared/models**: KMP shared models (JVM target)
+- **cli**: Clikt+Mosaic terminal client
+- **infra**: Terraform IaC for GCP
+
+## Backend Architecture (backend/server)
+
+### Tech Stack
+- **Ktor 3.1.1**: HTTP server and routing
+- **kotlinx-serialization**: JSON serialization
+- **Firebase Admin SDK**: Authentication
+- **Logback**: Logging
+
+### Key Components
+
+**Plugins** (`plugins/`):
+- `Serialization.kt`: JSON content negotiation with kotlinx-serialization
+- `Monitoring.kt`: Request logging with CallLogging
+- `Authentication.kt`: Firebase JWT authentication (placeholder)
+- `Routing.kt`: Route configuration
+
+**Routes** (`routes/`):
+- `HealthRoutes.kt`: Health check endpoint
+- `UserRoutes.kt`: User profile and settings management
+- `AiRoutes.kt`: AI provider integration
+
+**Configuration**:
+- `AppConfig.kt`: Environment-based configuration (port, GCP project)
+- `application.yaml`: Ktor server configuration
+- `logback.xml`: Logging configuration
+
+### Deployment
+- Docker image built from `Dockerfile` (eclipse-temurin:21-jre-alpine)
+- Deployed to Cloud Run via GitHub Actions
+- Uses Workload Identity Federation for GCP authentication
+
+## Shared Models (shared:models)
+
+Kotlin Multiplatform module targeting JVM. Provides serializable data classes for cross-module communication.
+
+### Domain Models
+
+**User Domain** (`user/`):
+- `UserProfile`: User identity and profile information
+- `UserSettings`: User preferences
+
+**Task Domain** (`task/`):
+- `TaskPriority`: Priority enumeration
+- `TaskItem`: Task data with metadata
+- `TaskProject`: Project/folder organization
+
+**AI Domain** (`ai/`):
+- `AiProvider`: Supported AI providers (Vertex Gemini, Claude API, OpenAI)
+- `AiRequest`: AI chat request
+- `AiResponse`: AI chat response with metadata
+
+All models use `@Serializable` from kotlinx-serialization.
+
+## CLI Architecture (cli/)
+
+Terminal client for interacting with backend API.
+
+### Tech Stack
+- **Clikt 5.0.3**: Command-line interface framework
+- **Mosaic 0.14.0**: Terminal UI runtime
+- **Ktor Client**: HTTP client for backend communication
+
+### Commands
+
+**RootCommand**:
+- Accepts `--server-url` option (default: localhost:8080)
+- Passes URL to subcommands via Clikt context
+
+**TaskCommand**:
+- `list`: Fetch and display tasks from backend
+- `show <id>`: Display task details
+
+**AiCommand**:
+- `<prompt>`: Send prompt to backend AI endpoint
+
+**JarvisClient**:
+- Ktor HTTP client wrapper
+- Uses shared models for request/response serialization
+
+## Convention Plugins (build-logic/convention)
+
+Five custom Gradle convention plugins:
+
+1. **jarvis.local-properties**: Loads `local.properties` (existing)
+2. **jarvis.managed-devices**: Configures GMD testing (existing)
+3. **jarvis.kmp-library**: Configures KMP module with JVM target, kotlinx-serialization
+4. **jarvis.ktor-server**: Configures Ktor server application
+5. **jarvis.cli-application**: Configures Kotlin application with serialization
+
+All plugins follow the class-based `Plugin<Project>` pattern.
+
+## CI/CD Architecture
+
+Three GitHub Actions workflows:
+
+**android.yml**:
+- Triggers on mobile, shared, build-logic changes
+- Runs assembleDebug, test, lint
+- Uploads APK and test results
+
+**backend.yml**:
+- Test job runs backend tests
+- Deploy job (main only): builds Docker, pushes to Artifact Registry, deploys to Cloud Run
+- Uses Workload Identity Federation for secure GCP auth
+
+**terraform.yml**:
+- Plan job validates and plans infrastructure changes
+- Apply job (main only, requires approval): applies to production
+- Uses WIF for GCP auth
+
+## Infrastructure (infra/)
+
+Terraform modules for GCP services:
+
+**artifact-registry**: Docker repository for backend images
+**cloud-run**: Backend service with auto-scaling (0-3 instances)
+**firestore**: Native Firestore database for user data
+**cloud-functions**: Placeholder for IFTTT webhook handlers
+**pubsub**: Event topic and subscription for async messaging
+**secrets**: Secret Manager entries for API keys
+
+All resources tagged with environment labels.

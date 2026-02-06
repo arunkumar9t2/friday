@@ -22,4 +22,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Jarvis"
-include(":app")
+include(":mobile:app")
+include(":shared:models")
+include(":backend:server")
+include(":cli")

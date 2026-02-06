@@ -50,3 +50,13 @@ _sandbox
 .vscode/
 /.idea/AndroidProjectSystem.xml
 /.idea/git_toolbox_blame.xml
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/*.tfvars
+!infra/terraform.tfvars.example
+
+# CLI distribution
+cli/build/install/

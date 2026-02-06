@@ -1,0 +1,69 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'mobile/**'
+      - 'shared/**'
+      - 'build-logic/**'
+      - 'gradle/**'
+      - '**.gradle.kts'
+      - 'gradle.properties'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'mobile/**'
+      - 'shared/**'
+      - 'build-logic/**'
+      - 'gradle/**'
+      - '**.gradle.kts'
+      - 'gradle.properties'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        cache: 'gradle'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Build mobile app
+      run: ./gradlew :mobile:app:assembleDebug
+
+    - name: Run mobile tests
+      run: ./gradlew :mobile:app:test
+
+    - name: Run lint
+      run: ./gradlew :mobile:app:lint
+
+    - name: Run shared module tests
+      run: ./gradlew :shared:models:jvmTest
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: app-debug
+        path: mobile/app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 7
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          mobile/app/build/reports/tests/
+          shared/models/build/reports/tests/
+        retention-days: 7
