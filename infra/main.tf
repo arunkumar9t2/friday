@@ -11,16 +11,17 @@ module "artifact_registry" {
   environment = var.environment
 }
 
-# Cloud Run service
-module "cloud_run" {
-  source         = "./modules/cloud-run"
-  project_id     = var.project_id
-  region         = var.region
-  environment    = var.environment
-  repository_url = module.artifact_registry.repository_url
-
-  depends_on = [module.artifact_registry]
-}
+# Cloud Run service - disabled until backend Docker image is built
+# TODO: Uncomment after building and pushing backend image to Artifact Registry
+# module "cloud_run" {
+#   source         = "./modules/cloud-run"
+#   project_id     = var.project_id
+#   region         = var.region
+#   environment    = var.environment
+#   repository_url = module.artifact_registry.repository_url
+#
+#   depends_on = [module.artifact_registry]
+# }
 
 # Firestore database
 module "firestore" {
