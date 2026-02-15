@@ -39,11 +39,15 @@ class PermissionRequestHandler @Inject constructor(
     permissionLauncherManager.requestRuntimePermission(activity, permission, onResult)
   }
 
-  /** Navigate to settings for special permissions */
+  /**
+   * Navigate to settings for special permissions.
+   *
+   * This method returns immediately after launching the settings intent.
+   * Use lifecycle observers (ON_RESUME) to detect when user returns and refresh permission state.
+   */
   fun requestSpecialPermission(
     activity: Activity,
-    permission: PermissionType,
-    onResult: (() -> Unit)? = null
+    permission: PermissionType
   ) {
     val intent = when (permission) {
       PermissionType.SYSTEM_ALERT_WINDOW -> createOverlaySettingsIntent()
@@ -56,11 +60,9 @@ class PermissionRequestHandler @Inject constructor(
     intent?.let {
       try {
         activity.startActivity(it)
-        onResult?.invoke()
       } catch (e: Exception) {
         // Fallback to general settings if specific intent fails
         activity.startActivity(Intent(Settings.ACTION_SETTINGS))
-        onResult?.invoke()
       }
     }
   }
@@ -103,19 +105,22 @@ class PermissionRequestHandler @Inject constructor(
     return Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
   }
 
-  /** Open app settings for permanently denied permissions */
-  fun openAppSettings(activity: Activity, onReturn: (() -> Unit)? = null) {
+  /**
+   * Open app settings for permanently denied permissions.
+   *
+   * This method returns immediately after launching the settings intent.
+   * Use lifecycle observers (ON_RESUME) to detect when user returns and refresh permission state.
+   */
+  fun openAppSettings(activity: Activity) {
     val intent = Intent(
       Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
       Uri.parse("package:${context.packageName}")
     )
     try {
       activity.startActivity(intent)
-      onReturn?.invoke()
     } catch (e: Exception) {
       // Fallback to general settings if specific intent fails
       activity.startActivity(Intent(Settings.ACTION_SETTINGS))
-      onReturn?.invoke()
     }
   }
 

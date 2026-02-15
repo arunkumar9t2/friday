@@ -2,6 +2,7 @@ package dev.arunkumar.jarvis.ui.screens.permissions
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -9,6 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -34,12 +38,26 @@ class FeatureGroupDetailPresenter @AssistedInject constructor(
     val appPermissionState by permissionManager.permissionState.collectAsState()
     var permissionsState by remember { mutableStateOf<ListState<PermissionState>>(ListState.Loading) }
     var message by remember { mutableStateOf<FeatureGroupDetailScreen.Message?>(null) }
+    var isReturningFromSettings by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val activity = context as? ComponentActivity
 
-    // Refresh permissions when screen loads
+    // Refresh permissions on initial composition
     LaunchedEffect(Unit) {
       permissionManager.refreshPermissionState()
+    }
+
+    // Refresh permissions when returning from settings (not on every resume)
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner.lifecycle, screen.featureGroup) {
+      val observer = LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_RESUME && isReturningFromSettings) {
+          permissionManager.refreshPermissionState()
+          isReturningFromSettings = false
+        }
+      }
+      lifecycleOwner.lifecycle.addObserver(observer)
+      onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     // Update permissionsState when appPermissionState changes
@@ -76,7 +94,6 @@ class FeatureGroupDetailPresenter @AssistedInject constructor(
                 activity = act,
                 permission = event.permission
               ) { granted ->
-                permissionManager.refreshPermissionState()
                 message = if (granted) {
                   FeatureGroupDetailScreen.Message.Success("Permission granted")
                 } else {
@@ -89,17 +106,14 @@ class FeatureGroupDetailPresenter @AssistedInject constructor(
           is FeatureGroupDetailScreen.Event.OnOpenSettings -> {
             activity?.let { act ->
               val permission = event.permission
+              isReturningFromSettings = true
               if (permission.protectionLevel == dev.arunkumar.jarvis.data.permissions.ProtectionLevel.DANGEROUS) {
-                permissionRequestHandler.openAppSettings(activity = act) {
-                  permissionManager.refreshPermissionState()
-                }
+                permissionRequestHandler.openAppSettings(activity = act)
               } else {
                 permissionRequestHandler.requestSpecialPermission(
                   activity = act,
                   permission = permission
-                ) {
-                  permissionManager.refreshPermissionState()
-                }
+                )
               }
             }
           }
