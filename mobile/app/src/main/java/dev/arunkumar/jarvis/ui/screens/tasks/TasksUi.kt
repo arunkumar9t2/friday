@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,7 +64,8 @@ fun TasksUi(state: TasksState, modifier: Modifier = Modifier) {
         Box(
           modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues),
+            .padding(paddingValues)
+            .testTag("tasks_loading"),
           contentAlignment = Alignment.Center,
         ) {
           CircularProgressIndicator()
@@ -73,7 +75,8 @@ fun TasksUi(state: TasksState, modifier: Modifier = Modifier) {
         Box(
           modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues),
+            .padding(paddingValues)
+            .testTag("tasks_empty"),
           contentAlignment = Alignment.Center,
         ) {
           Text(
@@ -92,7 +95,9 @@ fun TasksUi(state: TasksState, modifier: Modifier = Modifier) {
             .padding(paddingValues),
         ) {
           LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+              .fillMaxSize()
+              .testTag("tasks_list"),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
           ) {
@@ -123,6 +128,7 @@ private fun TaskCard(
   Card(
     modifier = modifier
       .fillMaxWidth()
+      .testTag("task_card_${task.taskId}")
       .clickable(onClick = onClick),
     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
   ) {

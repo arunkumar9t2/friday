@@ -90,6 +90,9 @@ Multi-module monorepo with Android frontend, Kotlin backend, shared models, and 
 **Shared**: `dev.arunkumar.jarvis.shared.models` — KMP models (user, task, AI)
 **CLI**: `dev.arunkumar.jarvis.cli` — Clikt terminal client
 
+**External Dependencies**:
+- **TickTick Proxy**: OAuth2 proxy Cloud Run service at `https://ticktick-proxy-j5wtc3hzxq-uc.a.run.app/` (see `spec/ticktick-proxy.md` for architecture)
+
 ### Mobile App (mobile/app/)
 
 Android app using Circuit + Hilt with unidirectional data flow.
