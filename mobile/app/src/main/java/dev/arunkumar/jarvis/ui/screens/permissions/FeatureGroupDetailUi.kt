@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -257,6 +258,20 @@ private fun PermissionCard(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text("Settings")
               }
+            }
+          }
+
+          // Permanently denied dangerous permission → redirect to app settings
+          permissionState.isPermanentlyDenied &&
+            permissionState.permission.protectionLevel == ProtectionLevel.DANGEROUS -> {
+            Button(onClick = onOpenSettings) {
+              Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+              )
+              Spacer(modifier = Modifier.width(4.dp))
+              Text(stringResource(dev.arunkumar.jarvis.R.string.permission_open_app_settings))
             }
           }
 

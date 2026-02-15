@@ -103,6 +103,22 @@ class PermissionRequestHandler @Inject constructor(
     return Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
   }
 
+  /** Open app settings for permanently denied permissions */
+  fun openAppSettings(activity: Activity, onReturn: (() -> Unit)? = null) {
+    val intent = Intent(
+      Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+      Uri.parse("package:${context.packageName}")
+    )
+    try {
+      activity.startActivity(intent)
+      onReturn?.invoke()
+    } catch (e: Exception) {
+      // Fallback to general settings if specific intent fails
+      activity.startActivity(Intent(Settings.ACTION_SETTINGS))
+      onReturn?.invoke()
+    }
+  }
+
   /** Check if we should show rationale for a permission */
   fun shouldShowRationale(activity: Activity, permission: PermissionType): Boolean {
     return if (permission.protectionLevel == ProtectionLevel.DANGEROUS) {

@@ -27,4 +27,7 @@
   <string name="ticktick_add_task">Add task</string>
   <string name="ticktick_refresh">Refresh</string>
   <string name="permission_rationale_ticktick">TickTick task access allows Jarvis to display your tasks and provide task management.</string>
+
+  <!-- Permission UI Strings -->
+  <string name="permission_open_app_settings">Open App Settings</string>
 </resources>

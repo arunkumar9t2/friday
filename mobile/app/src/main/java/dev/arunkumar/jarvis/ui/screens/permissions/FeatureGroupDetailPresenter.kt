@@ -88,11 +88,18 @@ class FeatureGroupDetailPresenter @AssistedInject constructor(
 
           is FeatureGroupDetailScreen.Event.OnOpenSettings -> {
             activity?.let { act ->
-              permissionRequestHandler.requestSpecialPermission(
-                activity = act,
-                permission = event.permission
-              ) {
-                permissionManager.refreshPermissionState()
+              val permission = event.permission
+              if (permission.protectionLevel == dev.arunkumar.jarvis.data.permissions.ProtectionLevel.DANGEROUS) {
+                permissionRequestHandler.openAppSettings(activity = act) {
+                  permissionManager.refreshPermissionState()
+                }
+              } else {
+                permissionRequestHandler.requestSpecialPermission(
+                  activity = act,
+                  permission = permission
+                ) {
+                  permissionManager.refreshPermissionState()
+                }
               }
             }
           }
