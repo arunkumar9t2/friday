@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class ApiTickTickTag(
   val name: String,
   val label: String? = null,
-  val sortOrder: Int? = null,
+  val sortOrder: Long? = null,
   val sortType: String? = null,
   val color: String? = null,
   val parent: String? = null,
