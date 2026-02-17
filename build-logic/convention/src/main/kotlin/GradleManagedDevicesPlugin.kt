@@ -46,6 +46,7 @@ class GradleManagedDevicesPlugin : Plugin<Project> {
                     .filter { it.trim().startsWith("nameserver") }
                     .map { it.substringAfter("nameserver").trim() }
                     .filter { it != "127.0.0.53" } // Exclude stub resolver
+                    .distinct()
                     .take(4) // Emulator supports up to 4 DNS servers
                     .takeIf { it.isNotEmpty() }
                     ?: listOf("8.8.8.8", "8.8.4.4") // Fallback to Google DNS
@@ -113,7 +114,10 @@ exec "${'$'}SCRIPT_DIR/emulator.real" -dns-server $dnsServerArg "${'$'}@"
                 }
 
                 // Delete wrapper and restore original
-                emulatorBin.delete()
+                if (!emulatorBin.delete() && emulatorBin.exists()) {
+                    println("restoreEmulator: ERROR - Failed to delete wrapper (file may be in use)")
+                    return@doLast
+                }
                 if (emulatorReal.renameTo(emulatorBin)) {
                     println("restoreEmulator: Restored original emulator binary")
                 } else {
