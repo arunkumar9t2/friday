@@ -8,7 +8,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
@@ -20,6 +19,7 @@ import dev.arunkumar.jarvis.R
 import dev.arunkumar.jarvis.data.ticktick.TickTickIntents
 import dev.arunkumar.jarvis.data.ticktick.TickTickNotificationItem
 import dev.arunkumar.jarvis.data.ticktick.TickTickNotificationItem.TickTickTaskItem
+import dev.arunkumar.jarvis.data.ticktick.TickTickNotificationPresenter
 import dev.arunkumar.jarvis.data.ticktick.TickTickRepository
 import dev.arunkumar.jarvis.data.ticktick.relativeFormattedDate
 import dev.arunkumar.jarvis.data.ticktick.toRemoteView
@@ -39,6 +39,9 @@ class TickTickService : Service() {
   lateinit var repository: TickTickRepository
 
   @Inject
+  lateinit var presenter: TickTickNotificationPresenter
+
+  @Inject
   lateinit var notificationManager: NotificationManager
 
   @Inject
@@ -48,11 +51,17 @@ class TickTickService : Service() {
 
   override fun onCreate() {
     super.onCreate()
-    val notification = buildNotification(
-      title = getString(R.string.ticktick_loading),
-      tasks = emptyList(),
-    )
-    startForeground(NOTIFICATION_ID, notification)
+    startForeground(NOTIFICATION_ID, buildNotification(getString(R.string.ticktick_loading), emptyList()))
+    TickTickSyncWorker.enqueueOneTimeSync(workManager)
+    serviceScope.launch {
+      presenter.notificationItems().collect { items ->
+        val title = items.filterIsInstance<TickTickTaskItem>()
+          .firstOrNull()
+          ?.let { "${it.dueDate.relativeFormattedDate()} - ${it.title}" }
+          ?: getString(R.string.ticktick_tasks)
+        notificationManager.notify(NOTIFICATION_ID, buildNotification(title, items))
+      }
+    }
   }
 
   override fun onDestroy() {
@@ -61,7 +70,9 @@ class TickTickService : Service() {
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    intent?.let(::processIntent)
+    if (intent != null) processIntent(intent)
+    // null intent (START_STICKY restart) is safe: Flow collection
+    // started in onCreate() handles it automatically
     return START_STICKY
   }
 
@@ -77,31 +88,9 @@ class TickTickService : Service() {
           }
           startActivity(insertIntent)
         }
-        refreshNotification()
-      }
-      ACTION_REFRESH_NOTIFICATION -> refreshNotification()
-    }
-  }
-
-  private fun refreshNotification() {
-    serviceScope.launch {
-      try {
-        // Trigger one-time sync in background
         TickTickSyncWorker.enqueueOneTimeSync(workManager)
-        val items = repository.getNotificationItems()
-        val title = items.filterIsInstance<TickTickTaskItem>()
-          .firstOrNull()
-          ?.let { task ->
-            "${task.dueDate.relativeFormattedDate()} - ${task.title}"
-          } ?: getString(R.string.ticktick_tasks)
-        notificationManager.notify(NOTIFICATION_ID, buildNotification(title, items))
-      } catch (e: Exception) {
-        Log.e(TAG, "Failed to refresh notification", e)
-        notificationManager.notify(
-          NOTIFICATION_ID,
-          buildNotification(getString(R.string.ticktick_tasks), emptyList()),
-        )
       }
+      ACTION_REFRESH_NOTIFICATION -> TickTickSyncWorker.enqueueOneTimeSync(workManager)
     }
   }
 
